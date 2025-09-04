@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Dark mode styles */
+body.dark-mode {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+body.dark-mode nav {
+  background-color: #2d2d2d !important;
+}
+
+body.dark-mode section {
+  background-color: #1a1a1a !important;
+}
+
+body.dark-mode .bg-gray-50 {
+  background-color: #2d2d2d !important;
+}
+
+body.dark-mode .bg-white {
+  background-color: #1e1e1e !important;
+}
+
+body.dark-mode .text-gray-800 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .text-gray-600,
+body.dark-mode .text-gray-700 {
+  color: #d1d5db !important;
+}
+

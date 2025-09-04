@@ -1,0 +1,739 @@
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../redux/actions/auth';
+import { patientsAPI } from '../../lib/api';
+import Layout from '../../hocs/layouts/Layout';
+
+function NutricionistaDashboard() {
+    const dispatch = useDispatch();
+    const { user } = useSelector(state => state.auth);
+    const [patients, setPatients] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedPatient, setSelectedPatient] = useState(null);
+    const [formData, setFormData] = useState({
+        dni: '',
+        first_name: '',
+        last_name: '',
+        email: '',
+        birth_date: '',
+        phone: '',
+        address: '',
+        has_diabetes: false,
+        has_hypertension: false,
+        medical_history: '',
+        allergies: ''
+    });
+    const [submitLoading, setSubmitLoading] = useState(false);
+
+    useEffect(() => {
+        loadPatients();
+    }, []);
+
+    const loadPatients = async () => {
+        try {
+            setLoading(true);
+            const response = await patientsAPI.list();
+            setPatients(response.data);
+        } catch (error) {
+            setError('Error al cargar pacientes');
+            console.error('Error loading patients:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleLogout = () => {
+        dispatch(logout());
+    };
+
+    const resetForm = () => {
+        setFormData({
+            dni: '',
+            first_name: '',
+            last_name: '',
+            email: '',
+            birth_date: '',
+            phone: '',
+            address: '',
+            has_diabetes: false,
+            has_hypertension: false,
+            medical_history: '',
+            allergies: ''
+        });
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const handleCreatePatient = async (e) => {
+        e.preventDefault();
+        setSubmitLoading(true);
+        try {
+            await patientsAPI.create(formData);
+            setShowCreateModal(false);
+            resetForm();
+            loadPatients();
+        } catch (error) {
+            console.error('Error creating patient:', error);
+            alert('Error al crear paciente: ' + (error.response?.data?.message || 'Error desconocido'));
+        } finally {
+            setSubmitLoading(false);
+        }
+    };
+
+    const handleEditPatient = (patient) => {
+        setSelectedPatient(patient);
+        setFormData({
+            dni: patient.person?.user?.dni || '',
+            first_name: patient.person?.user?.first_name || '',
+            last_name: patient.person?.user?.last_name || '',
+            email: patient.person?.user?.email || '',
+            birth_date: patient.person?.birth_date || '',
+            phone: patient.person?.phone || '',
+            address: patient.person?.address || '',
+            has_diabetes: patient.has_diabetes,
+            has_hypertension: patient.has_hypertension,
+            medical_history: patient.medical_history || '',
+            allergies: patient.allergies || ''
+        });
+        setShowEditModal(true);
+    };
+
+    const handleUpdatePatient = async (e) => {
+        e.preventDefault();
+        setSubmitLoading(true);
+        try {
+            await patientsAPI.update(selectedPatient.id, formData);
+            setShowEditModal(false);
+            resetForm();
+            setSelectedPatient(null);
+            loadPatients();
+        } catch (error) {
+            console.error('Error updating patient:', error);
+            alert('Error al actualizar paciente: ' + (error.response?.data?.message || 'Error desconocido'));
+        } finally {
+            setSubmitLoading(false);
+        }
+    };
+
+    const handleDeletePatient = async (patient) => {
+        if (window.confirm(`¿Estás seguro que deseas eliminar al paciente ${patient.person?.user?.first_name} ${patient.person?.user?.last_name}?`)) {
+            try {
+                await patientsAPI.delete(patient.id);
+                loadPatients();
+            } catch (error) {
+                console.error('Error deleting patient:', error);
+                alert('Error al eliminar paciente: ' + (error.response?.data?.message || 'Error desconocido'));
+            }
+        }
+    };
+
+    const closeCreateModal = () => {
+        setShowCreateModal(false);
+        resetForm();
+    };
+
+    const closeEditModal = () => {
+        setShowEditModal(false);
+        resetForm();
+        setSelectedPatient(null);
+    };
+
+    return (
+        <Layout>
+            <div className="min-h-screen bg-gray-50">
+                {/* Header */}
+                <header className="bg-white shadow-sm border-b border-gray-200">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center py-4">
+                            <div className="flex items-center">
+                                <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div className="ml-3">
+                                    <h1 className="text-xl font-semibold text-gray-900">
+                                        Dashboard Nutricionista
+                                    </h1>
+                                    <p className="text-sm text-gray-600">
+                                        Bienvenido/a, {user?.first_name} {user?.last_name}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                            >
+                                Cerrar Sesión
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                {/* Main Content */}
+                <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                    <div className="px-4 py-6 sm:px-0">
+                        {/* Stats Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div className="bg-white rounded-lg shadow p-6">
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div className="ml-3">
+                                        <p className="text-sm font-medium text-gray-500">Total Pacientes</p>
+                                        <p className="text-2xl font-semibold text-gray-900">{patients.length}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-white rounded-lg shadow p-6">
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div className="ml-3">
+                                        <p className="text-sm font-medium text-gray-500">Consultas Hoy</p>
+                                        <p className="text-2xl font-semibold text-gray-900">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-white rounded-lg shadow p-6">
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div className="ml-3">
+                                        <p className="text-sm font-medium text-gray-500">Planes Activos</p>
+                                        <p className="text-2xl font-semibold text-gray-900">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Patients Section */}
+                        <div className="bg-white shadow rounded-lg">
+                            <div className="px-6 py-4 border-b border-gray-200">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-lg font-medium text-gray-900">
+                                        Gestión de Pacientes
+                                    </h2>
+                                    <button
+                                        onClick={() => setShowCreateModal(true)}
+                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                    >
+                                        + Nuevo Paciente
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="px-6 py-4">
+                                {loading ? (
+                                    <div className="text-center py-8">
+                                        <svg className="animate-spin h-8 w-8 text-green-600 mx-auto" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <p className="mt-2 text-gray-600">Cargando pacientes...</p>
+                                    </div>
+                                ) : error ? (
+                                    <div className="text-center py-8">
+                                        <div className="text-red-600 mb-2">
+                                            <svg className="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <p className="text-red-600">{error}</p>
+                                        <button
+                                            onClick={loadPatients}
+                                            className="mt-2 text-green-600 hover:text-green-500"
+                                        >
+                                            Reintentar
+                                        </button>
+                                    </div>
+                                ) : patients.length === 0 ? (
+                                    <div className="text-center py-8">
+                                        <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                        </svg>
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2">Sin pacientes</h3>
+                                        <p className="text-gray-600 mb-4">Comienza agregando tu primer paciente</p>
+                                        <button
+                                            onClick={() => setShowCreateModal(true)}
+                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                        >
+                                            + Agregar Paciente
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Paciente
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        DNI
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Contacto
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Estado
+                                                    </th>
+                                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Acciones
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {patients.map((patient) => (
+                                                    <tr key={patient.id} className="hover:bg-gray-50">
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            <div className="flex items-center">
+                                                                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                                                    <span className="text-sm font-medium text-gray-700">
+                                                                        {patient.person?.user?.first_name?.[0]}{patient.person?.user?.last_name?.[0]}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="ml-4">
+                                                                    <div className="text-sm font-medium text-gray-900">
+                                                                        {patient.person?.user?.first_name} {patient.person?.user?.last_name}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                            {patient.person?.user?.dni}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                            <div>{patient.person?.phone}</div>
+                                                            <div className="text-gray-500">{patient.person?.user?.email}</div>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                                Activo
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                            <button 
+                                                                onClick={() => handleEditPatient(patient)}
+                                                                className="text-blue-600 hover:text-blue-900 mr-3"
+                                                            >
+                                                                Editar
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => handleDeletePatient(patient)}
+                                                                className="text-red-600 hover:text-red-900"
+                                                            >
+                                                                Eliminar
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* TODO: Features for future sprints */}
+                        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-white rounded-lg shadow p-6">
+                                <h3 className="text-lg font-medium text-gray-900 mb-4">Consultas Recientes</h3>
+                                <p className="text-gray-500">Próximamente...</p>
+                            </div>
+                            
+                            <div className="bg-white rounded-lg shadow p-6">
+                                <h3 className="text-lg font-medium text-gray-900 mb-4">Reportes</h3>
+                                <p className="text-gray-500">Próximamente...</p>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            {/* Modal para crear paciente */}
+            {showCreateModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-medium text-gray-900">Crear Nuevo Paciente</h3>
+                            <button
+                                onClick={closeCreateModal}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleCreatePatient}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Información Personal */}
+                                <div className="md:col-span-2">
+                                    <h4 className="text-md font-medium text-gray-700 mb-3">Información Personal</h4>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">DNI</label>
+                                    <input
+                                        type="text"
+                                        name="dni"
+                                        value={formData.dni}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                    <input
+                                        type="text"
+                                        name="first_name"
+                                        value={formData.first_name}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                                    <input
+                                        type="text"
+                                        name="last_name"
+                                        value={formData.last_name}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
+                                    <input
+                                        type="date"
+                                        name="birth_date"
+                                        value={formData.birth_date}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                                    <input
+                                        type="text"
+                                        name="address"
+                                        value={formData.address}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                {/* Información Médica */}
+                                <div className="md:col-span-2 mt-4">
+                                    <h4 className="text-md font-medium text-gray-700 mb-3">Información Médica</h4>
+                                </div>
+                                
+                                <div className="md:col-span-2">
+                                    <div className="flex space-x-6">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                name="has_diabetes"
+                                                checked={formData.has_diabetes}
+                                                onChange={handleInputChange}
+                                                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                                            />
+                                            <label className="ml-2 text-sm text-gray-700">Diabetes</label>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                name="has_hypertension"
+                                                checked={formData.has_hypertension}
+                                                onChange={handleInputChange}
+                                                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                                            />
+                                            <label className="ml-2 text-sm text-gray-700">Hipertensión</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Historial Médico</label>
+                                    <textarea
+                                        name="medical_history"
+                                        value={formData.medical_history}
+                                        onChange={handleInputChange}
+                                        rows={3}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    />
+                                </div>
+                                
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Alergias</label>
+                                    <textarea
+                                        name="allergies"
+                                        value={formData.allergies}
+                                        onChange={handleInputChange}
+                                        rows={2}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-end space-x-3 mt-6">
+                                <button
+                                    type="button"
+                                    onClick={closeCreateModal}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submitLoading}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-green-400 rounded-md transition-colors"
+                                >
+                                    {submitLoading ? 'Creando...' : 'Crear Paciente'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+            
+            {/* Modal para editar paciente */}
+            {showEditModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-medium text-gray-900">Editar Paciente</h3>
+                            <button
+                                onClick={closeEditModal}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleUpdatePatient}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Información Personal */}
+                                <div className="md:col-span-2">
+                                    <h4 className="text-md font-medium text-gray-700 mb-3">Información Personal</h4>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">DNI</label>
+                                    <input
+                                        type="text"
+                                        name="dni"
+                                        value={formData.dni}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none"
+                                        readOnly
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                    <input
+                                        type="text"
+                                        name="first_name"
+                                        value={formData.first_name}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                                    <input
+                                        type="text"
+                                        name="last_name"
+                                        value={formData.last_name}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
+                                    <input
+                                        type="date"
+                                        name="birth_date"
+                                        value={formData.birth_date}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                                    <input
+                                        type="text"
+                                        name="address"
+                                        value={formData.address}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        required
+                                    />
+                                </div>
+                                
+                                {/* Información Médica */}
+                                <div className="md:col-span-2 mt-4">
+                                    <h4 className="text-md font-medium text-gray-700 mb-3">Información Médica</h4>
+                                </div>
+                                
+                                <div className="md:col-span-2">
+                                    <div className="flex space-x-6">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                name="has_diabetes"
+                                                checked={formData.has_diabetes}
+                                                onChange={handleInputChange}
+                                                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                                            />
+                                            <label className="ml-2 text-sm text-gray-700">Diabetes</label>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                name="has_hypertension"
+                                                checked={formData.has_hypertension}
+                                                onChange={handleInputChange}
+                                                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                                            />
+                                            <label className="ml-2 text-sm text-gray-700">Hipertensión</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Historial Médico</label>
+                                    <textarea
+                                        name="medical_history"
+                                        value={formData.medical_history}
+                                        onChange={handleInputChange}
+                                        rows={3}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    />
+                                </div>
+                                
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Alergias</label>
+                                    <textarea
+                                        name="allergies"
+                                        value={formData.allergies}
+                                        onChange={handleInputChange}
+                                        rows={2}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-end space-x-3 mt-6">
+                                <button
+                                    type="button"
+                                    onClick={closeEditModal}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submitLoading}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-md transition-colors"
+                                >
+                                    {submitLoading ? 'Actualizando...' : 'Actualizar Paciente'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </Layout>
+    );
+}
+
+export default NutricionistaDashboard;
