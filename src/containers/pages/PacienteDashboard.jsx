@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/actions/auth';
 import Layout from '../../hocs/layouts/Layout';
+import ProfileSettings from '../../components/profile/ProfileSettings';
 
 function PacienteDashboard() {
     const dispatch = useDispatch();
     const { user } = useSelector(state => state.auth);
+    const [showProfileSettings, setShowProfileSettings] = useState(false);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -32,12 +35,23 @@ function PacienteDashboard() {
                                     </p>
                                 </div>
                             </div>
-                            <button
-                                onClick={handleLogout}
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                            >
-                                Cerrar Sesión
-                            </button>
+                            <div className="flex items-center space-x-4">
+                                <button
+                                    onClick={() => setShowProfileSettings(true)}
+                                    className="flex items-center text-gray-600 hover:text-purple-600 transition-colors"
+                                >
+                                    <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Mi Perfil
+                                </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                >
+                                    Cerrar Sesión
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -106,7 +120,7 @@ function PacienteDashboard() {
                             <div className="bg-white shadow rounded-lg">
                                 <div className="px-6 py-4 border-b border-gray-200">
                                     <h3 className="text-lg font-medium text-gray-900 flex items-center">
-                                        <svg className="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg className="w-5 h-5 mr-2" style={{color: '#9575cd'}} fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd" />
                                         </svg>
                                         Mi Plan Nutricional
@@ -187,7 +201,7 @@ function PacienteDashboard() {
                             <div className="bg-white shadow rounded-lg">
                                 <div className="px-6 py-4 border-b border-gray-200">
                                     <h3 className="text-lg font-medium text-gray-900 flex items-center">
-                                        <svg className="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg className="w-5 h-5 mr-2" style={{color: '#9575cd'}} fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
                                         </svg>
                                         Mi Progreso
@@ -232,6 +246,17 @@ function PacienteDashboard() {
                     </div>
                 </main>
             </div>
+
+            {/* Profile Settings Modal */}
+            {showProfileSettings && (
+                <ProfileSettings 
+                    onClose={() => setShowProfileSettings(false)}
+                    onUpdateProfile={() => {
+                        // Aquí se podría actualizar los datos del usuario en el estado global
+                        console.log('Profile updated successfully');
+                    }}
+                />
+            )}
         </Layout>
     );
 }

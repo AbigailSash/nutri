@@ -15,7 +15,7 @@ function BenefitsSection() {
                 <ul className="max-w-2xl mx-auto space-y-4">
                     {benefits.map((benefit, index) => (
                         <li key={index} className="flex items-center bg-white p-4 rounded-lg shadow-sm">
-                            <span className="text-green-600 mr-3">✓</span>
+                            <span className="mr-3" style={{color: '#9575cd'}}>✓</span>
                             <span className="text-gray-700">{benefit}</span>
                         </li>
                     ))}

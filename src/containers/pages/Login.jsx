@@ -59,11 +59,11 @@ function Login() {
 
     return (
         <Layout>
-            <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{background: 'linear-gradient(to bottom right, #f3f0ff, #e8ddf5)'}}>
                 <div className="max-w-md w-full space-y-8">
                     <div>
                         <div className="mx-auto flex justify-center">
-                            <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{background: 'linear-gradient(to bottom right, #b39ddb, #9575cd)'}}>
                                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                                 </svg>
@@ -89,7 +89,10 @@ function Login() {
                                     type="text"
                                     autoComplete="username"
                                     required
-                                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:z-10 sm:text-sm"
+                                    style={{'--tw-ring-color': '#9575cd'}}
+                                    onFocus={e => {e.target.style.borderColor = '#9575cd'; e.target.style.boxShadow = '0 0 0 3px rgba(149, 117, 205, 0.1)';}}
+                                    onBlur={e => {e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none';}}
                                     placeholder="DNI (8 dígitos)"
                                     value={formData.dni}
                                     onChange={handleChange}
@@ -106,7 +109,10 @@ function Login() {
                                     type={showPassword ? "text" : "password"}
                                     autoComplete="current-password"
                                     required
-                                    className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                                    className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:z-10 sm:text-sm"
+                                    style={{'--tw-ring-color': '#9575cd'}}
+                                    onFocus={e => {e.target.style.borderColor = '#9575cd'; e.target.style.boxShadow = '0 0 0 3px rgba(149, 117, 205, 0.1)';}}
+                                    onBlur={e => {e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none';}}
                                     placeholder="Contraseña"
                                     value={formData.password}
                                     onChange={handleChange}
@@ -151,7 +157,10 @@ function Login() {
                         <div className="flex items-center justify-between">
                             <Link
                                 to="/auth/forgot-password"
-                                className="text-sm text-green-600 hover:text-green-500"
+                                className="text-sm transition-colors"
+                                style={{color: '#9575cd'}}
+                                onMouseEnter={e => e.target.style.color = '#7e5cc0'}
+                                onMouseLeave={e => e.target.style.color = '#9575cd'}
                             >
                                 ¿Olvidaste tu contraseña?
                             </Link>
@@ -161,7 +170,10 @@ function Login() {
                             <button
                                 type="submit"
                                 disabled={loading || !formData.dni || !formData.password}
-                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{backgroundColor: '#b39ddb', '--tw-ring-color': '#9575cd'}}
+                                onMouseEnter={e => !e.target.disabled && (e.target.style.backgroundColor = '#9575cd')}
+                                onMouseLeave={e => !e.target.disabled && (e.target.style.backgroundColor = '#b39ddb')}
                             >
                                 {loading ? (
                                     <>
@@ -180,7 +192,9 @@ function Login() {
                         <div className="text-center">
                             <Link
                                 to="/"
-                                className="text-sm text-gray-600 hover:text-green-600"
+                                className="text-sm text-gray-600 transition-colors"
+                                onMouseEnter={e => e.target.style.color = '#9575cd'}
+                                onMouseLeave={e => e.target.style.color = '#6b7280'}
                             >
                                 ← Volver al inicio
                             </Link>

@@ -1,6 +1,6 @@
 function ContactSection() {
     return (
-        <section className="py-16 bg-gradient-to-br from-green-500 to-blue-500">
+        <section className="py-16" style={{background: 'linear-gradient(to bottom right, #b39ddb, #9575cd)'}}>
             <div className="container mx-auto px-4">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-12">
@@ -84,7 +84,10 @@ function ContactSection() {
                                         </label>
                                         <input 
                                             type="text" 
-                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white" 
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        style={{'--tw-ring-color': '#9575cd'}}
+                                        onFocus={e => e.target.style.borderColor = '#9575cd'}
+                                        onBlur={e => e.target.style.borderColor = '#d1d5db'} 
                                             placeholder="Tu nombre"
                                             required 
                                         />
@@ -95,7 +98,10 @@ function ContactSection() {
                                         </label>
                                         <input 
                                             type="text" 
-                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white" 
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        style={{'--tw-ring-color': '#9575cd'}}
+                                        onFocus={e => e.target.style.borderColor = '#9575cd'}
+                                        onBlur={e => e.target.style.borderColor = '#d1d5db'} 
                                             placeholder="Tu apellido"
                                             required 
                                         />
@@ -108,7 +114,10 @@ function ContactSection() {
                                     </label>
                                     <input 
                                         type="email" 
-                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white" 
+                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        style={{'--tw-ring-color': '#9575cd'}}
+                                        onFocus={e => e.target.style.borderColor = '#9575cd'}
+                                        onBlur={e => e.target.style.borderColor = '#d1d5db'} 
                                         placeholder="tu@email.com"
                                         required 
                                     />
@@ -120,7 +129,10 @@ function ContactSection() {
                                     </label>
                                     <input 
                                         type="tel" 
-                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white" 
+                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        style={{'--tw-ring-color': '#9575cd'}}
+                                        onFocus={e => e.target.style.borderColor = '#9575cd'}
+                                        onBlur={e => e.target.style.borderColor = '#d1d5db'} 
                                         placeholder="+54 9 11 1234-5678"
                                     />
                                 </div>
@@ -129,7 +141,11 @@ function ContactSection() {
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         ¿Cuál es tu objetivo? *
                                     </label>
-                                    <select className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white" required>
+                                    <select className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        style={{'--tw-ring-color': '#9575cd'}}
+                                        onFocus={e => e.target.style.borderColor = '#9575cd'}
+                                        onBlur={e => e.target.style.borderColor = '#d1d5db'}
+                                        required>
                                         <option value="">Selecciona tu objetivo</option>
                                         <option value="perdida_peso">Pérdida de peso</option>
                                         <option value="ganancia_peso">Ganancia de peso</option>
@@ -146,14 +162,20 @@ function ContactSection() {
                                     </label>
                                     <textarea 
                                         rows="4" 
-                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white" 
+                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        style={{'--tw-ring-color': '#9575cd'}}
+                                        onFocus={e => e.target.style.borderColor = '#9575cd'}
+                                        onBlur={e => e.target.style.borderColor = '#d1d5db'} 
                                         placeholder="Cuéntanos más sobre tus objetivos, restricciones alimentarias o cualquier información relevante..."
                                     ></textarea>
                                 </div>
                                 
                                 <button 
                                     type="submit" 
-                                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300"
+                                    className="w-full text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300"
+                                    style={{backgroundColor: '#b39ddb'}}
+                                    onMouseEnter={e => e.target.style.backgroundColor = '#9575cd'}
+                                    onMouseLeave={e => e.target.style.backgroundColor = '#b39ddb'}
                                 >
                                     Enviar Solicitud
                                 </button>

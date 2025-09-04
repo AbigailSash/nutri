@@ -1,4 +1,48 @@
 @import "tailwindcss";
+@import "./nutrisalud.css";
+
+/* Global NutriSalud Color Variables */
+:root {
+  --nutri-primary: #9575cd;     /* lila oscuro */
+  --nutri-secondary: #b39ddb;   /* lila medio */
+  --nutri-light: #e8ddf5;       /* lila claro */
+  --nutri-lighter: #f3f0ff;     /* lila muy claro */
+  --nutri-dark: #7e5cc0;        /* lila más oscuro */
+}
+
+/* Default button styles with purple theme */
+.btn-primary {
+  background-color: var(--nutri-secondary);
+  border-color: var(--nutri-secondary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--nutri-primary);
+  border-color: var(--nutri-primary);
+}
+
+.btn-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(149, 117, 205, 0.25);
+}
+
+/* Form controls with purple focus */
+.form-control:focus, 
+input:focus, 
+select:focus, 
+textarea:focus {
+  border-color: var(--nutri-primary);
+  box-shadow: 0 0 0 0.2rem rgba(149, 117, 205, 0.25);
+}
+
+/* Links with purple theme */
+a.text-primary {
+  color: var(--nutri-primary) !important;
+}
+
+a.text-primary:hover {
+  color: var(--nutri-dark) !important;
+}
 
 /* Dark mode styles */
 body.dark-mode {

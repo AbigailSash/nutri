@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/actions/auth';
 import { patientsAPI } from '../../lib/api';
 import Layout from '../../hocs/layouts/Layout';
+import ProfileSettings from '../../components/profile/ProfileSettings';
 
 function NutricionistaDashboard() {
     const dispatch = useDispatch();
@@ -21,12 +22,11 @@ function NutricionistaDashboard() {
         birth_date: '',
         phone: '',
         address: '',
-        has_diabetes: false,
-        has_hypertension: false,
-        medical_history: '',
-        allergies: ''
+        gender: ''
     });
     const [submitLoading, setSubmitLoading] = useState(false);
+    const [modalError, setModalError] = useState('');
+    const [showProfileSettings, setShowProfileSettings] = useState(false);
 
     useEffect(() => {
         loadPatients();
@@ -58,10 +58,7 @@ function NutricionistaDashboard() {
             birth_date: '',
             phone: '',
             address: '',
-            has_diabetes: false,
-            has_hypertension: false,
-            medical_history: '',
-            allergies: ''
+            gender: ''
         });
     };
 
@@ -83,7 +80,7 @@ function NutricionistaDashboard() {
             loadPatients();
         } catch (error) {
             console.error('Error creating patient:', error);
-            alert('Error al crear paciente: ' + (error.response?.data?.message || 'Error desconocido'));
+            setModalError('Error al crear paciente: ' + (error.response?.data?.message || 'Error desconocido'));
         } finally {
             setSubmitLoading(false);
         }
@@ -99,10 +96,7 @@ function NutricionistaDashboard() {
             birth_date: patient.person?.birth_date || '',
             phone: patient.person?.phone || '',
             address: patient.person?.address || '',
-            has_diabetes: patient.has_diabetes,
-            has_hypertension: patient.has_hypertension,
-            medical_history: patient.medical_history || '',
-            allergies: patient.allergies || ''
+            gender: patient.person?.gender || ''
         });
         setShowEditModal(true);
     };
@@ -118,7 +112,7 @@ function NutricionistaDashboard() {
             loadPatients();
         } catch (error) {
             console.error('Error updating patient:', error);
-            alert('Error al actualizar paciente: ' + (error.response?.data?.message || 'Error desconocido'));
+            setModalError('Error al actualizar paciente: ' + (error.response?.data?.message || 'Error desconocido'));
         } finally {
             setSubmitLoading(false);
         }
@@ -131,7 +125,7 @@ function NutricionistaDashboard() {
                 loadPatients();
             } catch (error) {
                 console.error('Error deleting patient:', error);
-                alert('Error al eliminar paciente: ' + (error.response?.data?.message || 'Error desconocido'));
+                setError('Error al eliminar paciente: ' + (error.response?.data?.message || 'Error desconocido'));
             }
         }
     };
@@ -139,12 +133,14 @@ function NutricionistaDashboard() {
     const closeCreateModal = () => {
         setShowCreateModal(false);
         resetForm();
+        setModalError('');
     };
 
     const closeEditModal = () => {
         setShowEditModal(false);
         resetForm();
         setSelectedPatient(null);
+        setModalError('');
     };
 
     return (
@@ -155,7 +151,7 @@ function NutricionistaDashboard() {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex justify-between items-center py-4">
                             <div className="flex items-center">
-                                <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{background: 'linear-gradient(to bottom right, #b39ddb, #9575cd)'}}>
                                     <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                                     </svg>
@@ -169,12 +165,23 @@ function NutricionistaDashboard() {
                                     </p>
                                 </div>
                             </div>
-                            <button
-                                onClick={handleLogout}
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                            >
-                                Cerrar Sesión
-                            </button>
+                            <div className="flex items-center space-x-4">
+                                <button
+                                    onClick={() => setShowProfileSettings(true)}
+                                    className="flex items-center text-gray-600 hover:text-purple-600 transition-colors"
+                                >
+                                    <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Mi Perfil
+                                </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                >
+                                    Cerrar Sesión
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -187,7 +194,7 @@ function NutricionistaDashboard() {
                             <div className="bg-white rounded-lg shadow p-6">
                                 <div className="flex items-center">
                                     <div className="flex-shrink-0">
-                                        <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg className="w-8 h-8" style={{color: '#9575cd'}} fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                                         </svg>
                                     </div>
@@ -236,7 +243,7 @@ function NutricionistaDashboard() {
                                     </h2>
                                     <button
                                         onClick={() => setShowCreateModal(true)}
-                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                                     >
                                         + Nuevo Paciente
                                     </button>
@@ -246,7 +253,7 @@ function NutricionistaDashboard() {
                             <div className="px-6 py-4">
                                 {loading ? (
                                     <div className="text-center py-8">
-                                        <svg className="animate-spin h-8 w-8 text-green-600 mx-auto" fill="none" viewBox="0 0 24 24">
+                                        <svg className="animate-spin h-8 w-8 mx-auto" style={{color: '#9575cd'}} fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
@@ -262,7 +269,10 @@ function NutricionistaDashboard() {
                                         <p className="text-red-600">{error}</p>
                                         <button
                                             onClick={loadPatients}
-                                            className="mt-2 text-green-600 hover:text-green-500"
+                                            className="mt-2 transition-colors"
+                                            style={{color: '#9575cd'}}
+                                            onMouseEnter={e => e.target.style.color = '#7e5cc0'}
+                                            onMouseLeave={e => e.target.style.color = '#9575cd'}
                                         >
                                             Reintentar
                                         </button>
@@ -276,7 +286,7 @@ function NutricionistaDashboard() {
                                         <p className="text-gray-600 mb-4">Comienza agregando tu primer paciente</p>
                                         <button
                                             onClick={() => setShowCreateModal(true)}
-                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                                         >
                                             + Agregar Paciente
                                         </button>
@@ -328,7 +338,7 @@ function NutricionistaDashboard() {
                                                             <div className="text-gray-500">{patient.person?.user?.email}</div>
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap">
-                                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" style={{backgroundColor: '#f3f0ff', color: '#7e5cc0'}}>
                                                                 Activo
                                                             </span>
                                                         </td>
@@ -387,146 +397,146 @@ function NutricionistaDashboard() {
                             </button>
                         </div>
                         
+                        {modalError && (
+                            <div className="mb-4 bg-red-50 border border-red-200 rounded-md p-4">
+                                <div className="flex">
+                                    <div className="flex-shrink-0">
+                                        <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div className="ml-3">
+                                        <h3 className="text-sm font-medium text-red-800">Error al crear paciente</h3>
+                                        <div className="mt-2 text-sm text-red-700">
+                                            <p>{modalError}</p>
+                                        </div>
+                                    </div>
+                                    <div className="ml-auto pl-3">
+                                        <div className="-mx-1.5 -my-1.5">
+                                            <button
+                                                type="button"
+                                                onClick={() => setModalError('')}
+                                                className="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
+                                            >
+                                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
                         <form onSubmit={handleCreatePatient}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Información Personal */}
                                 <div className="md:col-span-2">
-                                    <h4 className="text-md font-medium text-gray-700 mb-3">Información Personal</h4>
+                                    <h4 className="text-md font-medium text-purple-700 mb-3">Información del Paciente</h4>
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">DNI</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">DNI *</label>
                                     <input
                                         type="text"
                                         name="dni"
                                         value={formData.dni}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        placeholder="12345678"
                                         required
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                                     <input
                                         type="email"
                                         name="email"
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        placeholder="paciente@email.com"
                                         required
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
                                     <input
                                         type="text"
                                         name="first_name"
                                         value={formData.first_name}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        placeholder="Juan"
                                         required
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Apellido *</label>
                                     <input
                                         type="text"
                                         name="last_name"
                                         value={formData.last_name}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        placeholder="Pérez"
                                         required
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Sexo *</label>
+                                    <select
+                                        name="gender"
+                                        value={formData.gender}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        required
+                                    >
+                                        <option value="">Seleccionar sexo</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Femenino</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento *</label>
                                     <input
                                         type="date"
                                         name="birth_date"
                                         value={formData.birth_date}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                         required
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono *</label>
                                     <input
                                         type="tel"
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        placeholder="+54 9 11 1234-5678"
                                         required
                                     />
                                 </div>
                                 
                                 <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección *</label>
                                     <input
                                         type="text"
                                         name="address"
                                         value={formData.address}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        placeholder="Av. Corrientes 1234, CABA"
                                         required
-                                    />
-                                </div>
-                                
-                                {/* Información Médica */}
-                                <div className="md:col-span-2 mt-4">
-                                    <h4 className="text-md font-medium text-gray-700 mb-3">Información Médica</h4>
-                                </div>
-                                
-                                <div className="md:col-span-2">
-                                    <div className="flex space-x-6">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                name="has_diabetes"
-                                                checked={formData.has_diabetes}
-                                                onChange={handleInputChange}
-                                                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                                            />
-                                            <label className="ml-2 text-sm text-gray-700">Diabetes</label>
-                                        </div>
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                name="has_hypertension"
-                                                checked={formData.has_hypertension}
-                                                onChange={handleInputChange}
-                                                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                                            />
-                                            <label className="ml-2 text-sm text-gray-700">Hipertensión</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Historial Médico</label>
-                                    <textarea
-                                        name="medical_history"
-                                        value={formData.medical_history}
-                                        onChange={handleInputChange}
-                                        rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                                    />
-                                </div>
-                                
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Alergias</label>
-                                    <textarea
-                                        name="allergies"
-                                        value={formData.allergies}
-                                        onChange={handleInputChange}
-                                        rows={2}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                                     />
                                 </div>
                             </div>
@@ -542,7 +552,7 @@ function NutricionistaDashboard() {
                                 <button
                                     type="submit"
                                     disabled={submitLoading}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-green-400 rounded-md transition-colors"
+                                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 rounded-md transition-colors"
                                 >
                                     {submitLoading ? 'Creando...' : 'Crear Paciente'}
                                 </button>
@@ -568,11 +578,42 @@ function NutricionistaDashboard() {
                             </button>
                         </div>
                         
+                        {modalError && (
+                            <div className="mb-4 bg-red-50 border border-red-200 rounded-md p-4">
+                                <div className="flex">
+                                    <div className="flex-shrink-0">
+                                        <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div className="ml-3">
+                                        <h3 className="text-sm font-medium text-red-800">Error al actualizar paciente</h3>
+                                        <div className="mt-2 text-sm text-red-700">
+                                            <p>{modalError}</p>
+                                        </div>
+                                    </div>
+                                    <div className="ml-auto pl-3">
+                                        <div className="-mx-1.5 -my-1.5">
+                                            <button
+                                                type="button"
+                                                onClick={() => setModalError('')}
+                                                className="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
+                                            >
+                                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
                         <form onSubmit={handleUpdatePatient}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Información Personal */}
                                 <div className="md:col-span-2">
-                                    <h4 className="text-md font-medium text-gray-700 mb-3">Información Personal</h4>
+                                    <h4 className="text-md font-medium text-purple-700 mb-3">Información del Paciente</h4>
                                 </div>
                                 
                                 <div>
@@ -588,126 +629,89 @@ function NutricionistaDashboard() {
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                                     <input
                                         type="email"
                                         name="email"
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                         required
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
                                     <input
                                         type="text"
                                         name="first_name"
                                         value={formData.first_name}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                         required
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Apellido *</label>
                                     <input
                                         type="text"
                                         name="last_name"
                                         value={formData.last_name}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                         required
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Sexo *</label>
+                                    <select
+                                        name="gender"
+                                        value={formData.gender}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        required
+                                    >
+                                        <option value="">Seleccionar sexo</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Femenino</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento *</label>
                                     <input
                                         type="date"
                                         name="birth_date"
                                         value={formData.birth_date}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                         required
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono *</label>
                                     <input
                                         type="tel"
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                         required
                                     />
                                 </div>
                                 
                                 <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección *</label>
                                     <input
                                         type="text"
                                         name="address"
                                         value={formData.address}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                         required
-                                    />
-                                </div>
-                                
-                                {/* Información Médica */}
-                                <div className="md:col-span-2 mt-4">
-                                    <h4 className="text-md font-medium text-gray-700 mb-3">Información Médica</h4>
-                                </div>
-                                
-                                <div className="md:col-span-2">
-                                    <div className="flex space-x-6">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                name="has_diabetes"
-                                                checked={formData.has_diabetes}
-                                                onChange={handleInputChange}
-                                                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                                            />
-                                            <label className="ml-2 text-sm text-gray-700">Diabetes</label>
-                                        </div>
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                name="has_hypertension"
-                                                checked={formData.has_hypertension}
-                                                onChange={handleInputChange}
-                                                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                                            />
-                                            <label className="ml-2 text-sm text-gray-700">Hipertensión</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Historial Médico</label>
-                                    <textarea
-                                        name="medical_history"
-                                        value={formData.medical_history}
-                                        onChange={handleInputChange}
-                                        rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                                    />
-                                </div>
-                                
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Alergias</label>
-                                    <textarea
-                                        name="allergies"
-                                        value={formData.allergies}
-                                        onChange={handleInputChange}
-                                        rows={2}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                                     />
                                 </div>
                             </div>
@@ -723,7 +727,7 @@ function NutricionistaDashboard() {
                                 <button
                                     type="submit"
                                     disabled={submitLoading}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-md transition-colors"
+                                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 rounded-md transition-colors"
                                 >
                                     {submitLoading ? 'Actualizando...' : 'Actualizar Paciente'}
                                 </button>
@@ -731,6 +735,17 @@ function NutricionistaDashboard() {
                         </form>
                     </div>
                 </div>
+            )}
+
+            {/* Profile Settings Modal */}
+            {showProfileSettings && (
+                <ProfileSettings 
+                    onClose={() => setShowProfileSettings(false)}
+                    onUpdateProfile={() => {
+                        // Aquí se podría actualizar los datos del usuario en el estado global
+                        console.log('Profile updated successfully');
+                    }}
+                />
             )}
         </Layout>
     );

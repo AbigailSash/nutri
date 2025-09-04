@@ -1,5 +1,5 @@
 function WhatsAppButton() {
-    const whatsappNumber = "543704511481";
+    const whatsappNumber = "3704209675";
     const message = "Hola Lic. Olmedo, quiero saber más sobre las consultas nutricionales";
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
@@ -8,7 +8,10 @@ function WhatsAppButton() {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-colors duration-300 z-50"
+            className="fixed bottom-6 right-6 text-white p-4 rounded-full shadow-lg transition-colors duration-300 z-50"
+            style={{backgroundColor: '#b39ddb'}}
+            onMouseEnter={e => e.target.style.backgroundColor = '#9575cd'}
+            onMouseLeave={e => e.target.style.backgroundColor = '#b39ddb'}
             aria-label="Contactar por WhatsApp"
         >
             <svg 

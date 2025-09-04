@@ -37,13 +37,17 @@ function Unauthorized() {
                             <div className="mt-6 flex flex-col space-y-3">
                                 <Link
                                     to={user?.role === 'nutricionista' ? '/dashboard/nutri' : user?.role === 'paciente' ? '/dashboard/paciente' : '/'}
-                                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                    style={{backgroundColor: '#b39ddb', '--tw-ring-color': '#9575cd'}}
+                                    onMouseEnter={e => e.target.style.backgroundColor = '#9575cd'}
+                                    onMouseLeave={e => e.target.style.backgroundColor = '#b39ddb'}
                                 >
                                     Ir a mi dashboard
                                 </Link>
                                 <Link
                                     to="/"
-                                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                    style={{'--tw-ring-color': '#9575cd'}}
                                 >
                                     Volver al inicio
                                 </Link>
