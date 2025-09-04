@@ -18,6 +18,7 @@ class User(AbstractUser):
         unique=True,
         validators=[RegexValidator(r'^\d{8}$', 'DNI debe tener 8 dígitos')]
     )
+    profile_photo = models.ImageField(upload_to='profiles/', null=True, blank=True)
     
     USERNAME_FIELD = 'dni'
     REQUIRED_FIELDS = ['username', 'email']
@@ -40,6 +41,7 @@ class Person(models.Model):
 
 class Patient(models.Model):
     person = models.OneToOneField(Person, on_delete=models.CASCADE, related_name='patient')
+    assigned_nutritionist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='patients', limit_choices_to={'role': 'nutricionista'}, null=True, blank=True)
     medical_history = models.TextField(blank=True)
     family_history = models.TextField(blank=True)
     current_medications = models.TextField(blank=True)
@@ -206,9 +208,10 @@ class PatientInvitation(models.Model):
             address=self.address
         )
         
-        # Crear patient
+        # Crear patient y asignarlo al nutricionista que lo invitó
         patient = Patient.objects.create(
             person=person,
+            assigned_nutritionist=self.invited_by,
             has_diabetes=self.has_diabetes,
             has_hypertension=self.has_hypertension,
             medical_history=self.medical_history,

@@ -5,10 +5,27 @@ from .models import User, Person, Patient, PatientInvitation
 
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_photo = serializers.ImageField(required=False, allow_null=True)
+    phone = serializers.CharField(max_length=20, required=False, allow_blank=True, allow_null=True)
+    
     class Meta:
         model = User
-        fields = ('id', 'dni', 'email', 'first_name', 'last_name', 'role', 'is_active')
-        read_only_fields = ('id',)
+        fields = ('id', 'dni', 'email', 'first_name', 'last_name', 'role', 'is_active', 'profile_photo', 'phone')
+        read_only_fields = ('id', 'dni', 'role', 'is_active')  # is_active NO debe ser editable
+        
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Agregar phone desde Person si existe
+        if hasattr(instance, 'person'):
+            data['phone'] = instance.person.phone
+        # Convertir profile_photo a URL completa si existe
+        if instance.profile_photo:
+            request = self.context.get('request')
+            if request:
+                data['profile_photo'] = request.build_absolute_uri(instance.profile_photo.url)
+            else:
+                data['profile_photo'] = instance.profile_photo.url
+        return data
 
 
 class PersonSerializer(serializers.ModelSerializer):
@@ -21,6 +38,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
 class PatientSerializer(serializers.ModelSerializer):
     person = PersonSerializer(read_only=True)
+    assigned_nutritionist = UserSerializer(read_only=True)
     
     class Meta:
         model = Patient
@@ -76,9 +94,10 @@ class PatientCreateSerializer(serializers.Serializer):
             address=validated_data['address']
         )
         
-        # Crear patient
+        # Crear patient y asignarlo al nutricionista que lo está creando
         patient = Patient.objects.create(
             person=person,
+            assigned_nutritionist=self.context['request'].user,
             has_diabetes=validated_data.get('has_diabetes', False),
             has_hypertension=validated_data.get('has_hypertension', False),
             medical_history=validated_data.get('medical_history', ''),
@@ -144,7 +163,7 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         dni = attrs.get('dni')
         password = attrs.get('password')
-
+        
         if dni and password:
             user = authenticate(
                 request=self.context.get('request'),
@@ -201,16 +220,35 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=True)
+    old_password = serializers.CharField(required=False)
+    current_password = serializers.CharField(required=False)
     new_password = serializers.CharField(required=True, validators=[validate_password])
-    new_password_confirm = serializers.CharField(required=True)
+    new_password_confirm = serializers.CharField(required=False)
+    confirm_password = serializers.CharField(required=False)
 
     def validate(self, attrs):
-        if attrs['new_password'] != attrs['new_password_confirm']:
+        # Permitir ambos formatos de nombres de campos
+        new_pass = attrs['new_password']
+        confirm_pass = attrs.get('new_password_confirm') or attrs.get('confirm_password')
+        
+        if confirm_pass and new_pass != confirm_pass:
             raise serializers.ValidationError("Las contraseñas nuevas no coinciden.")
+        
+        # Verificar que se proporcione la contraseña actual
+        current_pass = attrs.get('old_password') or attrs.get('current_password')
+        if not current_pass:
+            raise serializers.ValidationError("Debe proporcionar la contraseña actual.")
+            
+        attrs['current_password'] = current_pass
         return attrs
 
     def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Contraseña actual incorrecta.")
+        return value
+    
+    def validate_current_password(self, value):
         user = self.context['request'].user
         if not user.check_password(value):
             raise serializers.ValidationError("Contraseña actual incorrecta.")

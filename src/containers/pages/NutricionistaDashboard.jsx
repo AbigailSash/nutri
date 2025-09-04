@@ -151,10 +151,20 @@ function NutricionistaDashboard() {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex justify-between items-center py-4">
                             <div className="flex items-center">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{background: 'linear-gradient(to bottom right, #b39ddb, #9575cd)'}}>
-                                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                                    </svg>
+                                <div className="w-10 h-10 rounded-full overflow-hidden">
+                                    {user?.profile_photo ? (
+                                        <img 
+                                            src={user.profile_photo} 
+                                            alt={`${user.first_name} ${user.last_name}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center" style={{background: 'linear-gradient(to bottom right, #b39ddb, #9575cd)'}}>
+                                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="ml-3">
                                     <h1 className="text-xl font-semibold text-gray-900">

@@ -90,7 +90,18 @@
       "Read(/C:\\Users\\MatiB\\OneDrive\\Escritorio\\PROYECTO DE ABYCHUELAS\\sistema-nutricion\\src\\containers\\pages/**)",
       "Read(/c:\\Users\\MatiB\\Downloads/**)",
       "Read(/C:\\Users\\MatiB\\OneDrive\\Escritorio\\PROYECTO DE ABYCHUELAS\\sistema-nutricion\\src\\lib/**)",
-      "Read(/C:\\Users\\MatiB\\OneDrive\\Escritorio\\PROYECTO DE ABYCHUELAS\\sistema-nutricion\\src\\components\\profile/**)"
+      "Read(/C:\\Users\\MatiB\\OneDrive\\Escritorio\\PROYECTO DE ABYCHUELAS\\sistema-nutricion\\src\\components\\profile/**)",
+      "Read(/C:\\Users\\MatiB\\Downloads/**)",
+      "Bash(python:*)",
+      "Bash(taskkill:*)",
+      "Bash(del db.sqlite3)",
+      "Read(/c:\\Users\\MatiB\\Downloads/**)",
+      "Read(/C:\\Users\\MatiB\\Downloads/**)",
+      "Bash(pkill:*)",
+      "Read(/c:\\Users\\MatiB\\Downloads/**)",
+      "Read(/c:\\Users\\MatiB\\Downloads/**)",
+      "Read(/c:\\Users\\MatiB\\Downloads/**)",
+      "Read(/c:\\Users\\MatiB\\Downloads/**)"
     ],
     "deny": [],
     "ask": []

@@ -97,7 +97,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
     def get(self, request, *args, **kwargs):
         user = self.get_object()
-        user_data = UserSerializer(user).data
+        user_data = UserSerializer(user, context={'request': request}).data
         
         # Agregar datos adicionales según el rol
         if user.role == 'paciente' and hasattr(user, 'person') and hasattr(user.person, 'patient'):
@@ -107,6 +107,38 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
             'user': user_data,
             'role': user.role
         })
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        
+        # Filtrar is_active del request.data para evitar que se envíe desde frontend
+        data = request.data.copy()
+        if 'is_active' in data:
+            data.pop('is_active')
+        
+        # Actualizar los campos del usuario
+        serializer = self.get_serializer(instance, data=data, partial=partial, context={'request': request})
+        
+        if serializer.is_valid():
+            # Actualizar campos del usuario
+            user = serializer.save()
+            
+            # Si se proporciona teléfono, actualizar en Person
+            phone = request.data.get('phone')
+            if phone is not None and hasattr(user, 'person'):
+                user.person.phone = phone
+                user.person.save()
+            
+            # Respuesta con datos actualizados
+            response_data = UserSerializer(user, context={'request': request}).data
+            
+            return Response({
+                'message': 'Perfil actualizado correctamente',
+                'user': response_data
+            }, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChangePasswordView(APIView):
@@ -116,6 +148,12 @@ class ChangePasswordView(APIView):
         serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = request.user
+            current_password = serializer.validated_data['current_password']
+            
+            # Verificar contraseña actual
+            if not user.check_password(current_password):
+                return Response({'error': 'Contraseña actual incorrecta'}, status=status.HTTP_400_BAD_REQUEST)
+            
             user.set_password(serializer.validated_data['new_password'])
             user.save()
             
@@ -158,7 +196,16 @@ class PatientListView(generics.ListCreateAPIView):
     def get_queryset(self):
         # Solo nutricionistas pueden ver pacientes
         if self.request.user.role == 'nutricionista':
-            return Patient.objects.all()
+            # IMPORTANTE: Solo mostrar pacientes asignados a este nutricionista
+            base_query = Patient.objects.filter(assigned_nutritionist=self.request.user)
+            
+            # Por defecto solo mostrar pacientes activos
+            # Pero permitir ver todos con parámetro show_inactive=true
+            show_inactive = self.request.query_params.get('show_inactive', 'false').lower() == 'true'
+            if show_inactive:
+                return base_query  # Todos los pacientes del nutricionista (activos e inactivos)
+            else:
+                return base_query.filter(person__user__is_active=True)  # Solo activos del nutricionista
         return Patient.objects.none()
 
     def get_serializer_class(self):
@@ -298,10 +345,11 @@ class PatientDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         if self.request.user.role == 'nutricionista':
-            return Patient.objects.all()
+            # IMPORTANTE: Nutricionista solo puede ver SUS pacientes asignados (activos e inactivos)
+            return Patient.objects.filter(assigned_nutritionist=self.request.user)
         elif self.request.user.role == 'paciente':
-            # Paciente solo puede ver su propio perfil
-            return Patient.objects.filter(person__user=self.request.user)
+            # Paciente solo puede ver su propio perfil (y solo si está activo)
+            return Patient.objects.filter(person__user=self.request.user, person__user__is_active=True)
         return Patient.objects.none()
 
     def get_serializer_class(self):
@@ -332,16 +380,18 @@ class PatientDetailView(generics.RetrieveUpdateDestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         if request.user.role != 'nutricionista':
             return Response(
-                {'error': 'Solo nutricionistas pueden eliminar pacientes'}, 
+                {'error': 'Solo nutricionistas pueden desactivar pacientes'}, 
                 status=status.HTTP_403_FORBIDDEN
             )
         
         instance = self.get_object()
         patient_name = f"{instance.person.user.first_name} {instance.person.user.last_name}"
         
-        # Eliminar usuario (esto eliminará en cascada person y patient)
-        instance.person.user.delete()
+        # NO eliminar, solo desactivar el usuario
+        user = instance.person.user
+        user.is_active = False
+        user.save()
         
         return Response({
-            'message': f'Paciente {patient_name} eliminado exitosamente'
+            'message': f'Paciente {patient_name} desactivado exitosamente'
         }, status=status.HTTP_200_OK)

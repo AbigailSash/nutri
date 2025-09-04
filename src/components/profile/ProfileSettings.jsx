@@ -85,7 +85,7 @@ function ProfileSettings({ onClose, onUpdateProfile }) {
                 updateData.append('profile_photo', formData.profile_photo);
             }
             
-            const response = await profileAPI.updateProfile(formData);
+            const response = await profileAPI.updateProfile(updateData);
             
             setSuccess('Perfil actualizado correctamente');
             setTimeout(() => {
@@ -113,8 +113,8 @@ function ProfileSettings({ onClose, onUpdateProfile }) {
             return;
         }
         
-        if (passwordData.new_password.length < 6) {
-            setError('La nueva contraseña debe tener al menos 6 caracteres');
+        if (passwordData.new_password.length < 8) {
+            setError('La nueva contraseña debe tener al menos 8 caracteres');
             setLoading(false);
             return;
         }
@@ -133,7 +133,44 @@ function ProfileSettings({ onClose, onUpdateProfile }) {
             
         } catch (error) {
             console.error('Password change error:', error);
-            setError('Error al cambiar la contraseña: ' + (error.response?.data?.message || error.response?.data?.error || 'Error desconocido'));
+            
+            // Extraer mensaje específico de error de validación
+            let errorMessage = 'Error desconocido';
+            
+            if (error.response?.data) {
+                const errorData = error.response.data;
+                
+                // Buscar mensaje específico de error
+                if (errorData.message) {
+                    errorMessage = errorData.message;
+                } else if (errorData.error) {
+                    errorMessage = errorData.error;
+                } else if (errorData.new_password) {
+                    // Error específico en el campo new_password
+                    errorMessage = Array.isArray(errorData.new_password) 
+                        ? errorData.new_password[0] 
+                        : errorData.new_password;
+                } else if (errorData.current_password) {
+                    // Error específico en el campo current_password
+                    errorMessage = Array.isArray(errorData.current_password) 
+                        ? errorData.current_password[0] 
+                        : errorData.current_password;
+                } else if (errorData.non_field_errors) {
+                    // Errores generales del formulario
+                    errorMessage = Array.isArray(errorData.non_field_errors) 
+                        ? errorData.non_field_errors[0] 
+                        : errorData.non_field_errors;
+                } else {
+                    // Cualquier otro campo de error
+                    const firstErrorKey = Object.keys(errorData)[0];
+                    if (firstErrorKey) {
+                        const firstError = errorData[firstErrorKey];
+                        errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+                    }
+                }
+            }
+            
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -361,11 +398,11 @@ function ProfileSettings({ onClose, onUpdateProfile }) {
                                     value={passwordData.new_password}
                                     onChange={handlePasswordChange}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                                    minLength={6}
+                                    minLength={8}
                                     required
                                 />
                                 <p className="mt-1 text-sm text-gray-500">
-                                    Mínimo 6 caracteres
+                                    Mínimo 8 caracteres
                                 </p>
                             </div>
 
@@ -379,7 +416,7 @@ function ProfileSettings({ onClose, onUpdateProfile }) {
                                     value={passwordData.confirm_password}
                                     onChange={handlePasswordChange}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                                    minLength={6}
+                                    minLength={8}
                                     required
                                 />
                             </div>
