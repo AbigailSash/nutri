@@ -101,7 +101,9 @@
       "Read(/c:\\Users\\MatiB\\Downloads/**)",
       "Read(/c:\\Users\\MatiB\\Downloads/**)",
       "Read(/c:\\Users\\MatiB\\Downloads/**)",
-      "Read(/c:\\Users\\MatiB\\Downloads/**)"
+      "Read(/c:\\Users\\MatiB\\Downloads/**)",
+      "Bash(find:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

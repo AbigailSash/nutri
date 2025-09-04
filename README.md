@@ -1,19 +1,19 @@
-# 🥗 Sistema de Gestión Integral para Nutricionistas
+# Sistema de Gestión Integral para Nutricionistas
 
-MVP completo y funcional de un sistema de gestión nutricional que conecta nutricionistas profesionales con pacientes. Desarrollado con Django REST Framework y React.
+Sistema de gestión nutricional que conecta nutricionistas profesionales con pacientes. Desarrollado con Django REST Framework y React.
 
-## 🎯 Características del MVP
+## Características del Sistema
 
-- 🌐 **Landing page completa** con hero, características y CTAs
-- 🔐 **Autenticación JWT** con refresh automático y manejo de errores
-- 👩‍⚕️ **Dashboard Nutricionista** con métricas y actividad reciente
-- 👤 **Dashboard Paciente** con plan diario y seguimiento de progreso
-- 🛡️ **Rutas protegidas** con redirección automática por roles
-- 📱 **Diseño responsive** para móvil, tablet y desktop
-- ♿ **Accesibilidad WCAG 2.2 AA** completa
-- 🎨 **UI/UX profesional** con Tailwind CSS
+- **Landing page completa** con hero, características y CTAs
+- **Autenticación JWT** con refresh automático y manejo de errores
+- **Dashboard Nutricionista** con métricas y actividad reciente
+- **Dashboard Paciente** con plan diario y seguimiento de progreso
+- **Rutas protegidas** con redirección automática por roles
+- **Diseño responsive** para móvil, tablet y desktop
+- **Accesibilidad WCAG 2.2 AA** completa
+- **UI/UX profesional** con Tailwind CSS
 
-## 🏗️ Stack Tecnológico
+## Stack Tecnológico
 
 **Frontend:**
 - React 18 + JavaScript (sin TypeScript)
@@ -47,21 +47,16 @@ sistema-nutricion/
 └── README.md
 ```
 
-## 🚀 Instalación y Configuración
+## Instalación y Configuración
 
 ### Requisitos Previos
 - Python 3.8+ 
 - Node.js 16+
 - npm
 
-### 🔧 Backend (Django)
+### Backend (Django)
 
-1. **Navegar al directorio backend:**
-```bash
-cd backend
-```
-
-2. **Crear y activar entorno virtual:**
+1. **Crear y activar entorno virtual:**
 ```bash
 python -m venv venv
 
@@ -72,45 +67,40 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-3. **Instalar dependencias:**
+2. **Instalar dependencias:**
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Ejecutar migraciones:**
+3. **Ejecutar migraciones:**
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-5. **Crear usuarios de demostración:**
+4. **Crear usuarios por defecto:**
 ```bash
-python manage.py seed_demo_users
+python manage.py setup_all_users
 ```
 
-6. **Ejecutar servidor:**
+5. **Ejecutar servidor:**
 ```bash
 python manage.py runserver
 ```
 
-### ⚛️ Frontend (React)
+### Frontend (React)
 
-1. **Navegar al directorio frontend:**
-```bash
-cd frontend
-```
-
-2. **Instalar dependencias:**
+1. **Instalar dependencias:**
 ```bash
 npm install
 ```
 
-3. **Crear archivo .env (opcional):**
+2. **Crear archivo .env (opcional):**
 ```bash
 echo "VITE_API_URL=http://localhost:8000/api" > .env
 ```
 
-4. **Ejecutar servidor de desarrollo:**
+3. **Ejecutar servidor de desarrollo:**
 ```bash
 npm run dev
 ```
