@@ -1,0 +1,142 @@
+*{
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #ecd6ff, #c084fc);
+  transition: background 0.5s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+
+.main-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.logo-area {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.logo-area img {
+  max-width: 250px;
+  width: 100%;
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 450px;
+}
+
+.login-panel {
+  background-color: #fff;
+  border: 3px solid #b57cf6;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.login-panel h2 {
+  color: #9a69c9;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.login-icon {
+  width: 107px;
+  height: 107px;
+  margin: 10px auto 25px;
+  display: block;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  text-align: left;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+}
+
+.icon-img {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.input-group input {
+  border: none;
+  background: transparent;
+  outline: none;
+  flex: 1;
+  font-size: 16px;
+  color: #555;
+}
+
+.toggle-icon {
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 18px;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.options a {
+  text-decoration: none;
+  color: #555;
+}
+
+.login-btn {
+  width: 100%;
+  background-color: #b57cf6;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #a066e3;
+}
+
+/* Responsivo */
+@media screen and (max-width: 768px) {
+  .main-wrapper {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .logo-area img {
+    max-width: 180px;
+  }
+}

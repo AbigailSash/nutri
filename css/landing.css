@@ -1,0 +1,216 @@
+
+:root {
+  --lila-claro: #e8ddf5;
+  --lila: #b39ddb;
+  --lila-oscuro: #9575cd;
+  --fondo: #f9f7fc;
+  --texto: #333;
+  --gris: #eee;
+  --borde: #dcdcdc;
+  --sombra-suave: 0 4px 18px rgba(0, 0, 0, 0.06);
+  --dark-header-bg: #1c1c1c;
+  --dark-nav-link: #e0e0e0;
+  --texto-claro: #ffffff;
+}
+
+/* BASE */
+body {
+  font-family: 'Segoe UI', sans-serif !important;
+  background-color: var(--fondo) !important;
+  color: var(--texto) !important;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* NAVBAR */
+body .navbar {
+  background-color: var(--lila-claro) !important;
+}
+body .navbar-brand strong {
+  font-weight: 700 !important;
+  font-size: 1.3rem !important;
+  color: var(--lila-oscuro) !important;
+}
+body .navbar-light .nav-link {
+  color: var(--texto) !important;
+}
+body .navbar-light .nav-link:hover {
+  color: var(--lila-oscuro) !important;
+}
+body .dark-mode .navbar-light .nav-link {
+  color: var(--dark-nav-link) !important;
+}
+body .dark-mode .navbar-light .nav-link:hover {
+  color: var(--lila-oscuro) !important;
+}
+
+/* HERO SECTION */
+body section.bg-light {
+  background-color: var(--lila-claro) !important;
+}
+
+/* BOTONES */
+body .btn-primary {
+  background-color: var(--lila) !important;
+  color: white !important;
+  border: none !important;
+}
+body .btn-primary:hover {
+  background-color: var(--lila-oscuro) !important;
+}
+body .btn-success {
+  background-color: var(--lila-oscuro) !important;
+  border: none !important;
+}
+body .btn-success:hover {
+  background-color: #7e5cc0 !important;
+}
+
+/* SERVICIOS */
+body #servicios .col-md-4:hover {
+  background-color: var(--lila-claro) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--sombra-suave) !important;
+  transition: all 0.3s ease !important;
+}
+body #servicios img:hover {
+  transform: scale(1.05) !important;
+  transition: transform 0.3s ease !important;
+}
+
+/* TESTIMONIOS */
+body .blockquote {
+  border-left: 5px solid var(--lila-oscuro) !important;
+  padding-left: 1rem !important;
+  color: var(--texto) !important;
+}
+body .blockquote:hover {
+  background-color: var(--gris) !important;
+  border-left-color: #7e5cc0 !important;
+  border-radius: 6px !important;
+}
+
+/* SOBRE LA PROFESIONAL */
+body section.bg-white {
+  background-color: white !important;
+  color: var(--texto) !important;
+}
+body section.bg-white img {
+  border-radius: 12px !important;
+}
+.dark-mode section.bg-white,
+.dark-mode .bg-white {
+  background-color: #1a1a1a !important;
+  color: var(--texto-claro) !important;
+}
+
+
+
+/* FAQ */
+body .accordion-button:not(.collapsed) {
+  background-color: var(--lila-claro) !important;
+  color: var(--lila-oscuro) !important;
+}
+body .accordion-button:focus {
+  box-shadow: none !important;
+  border-color: var(--lila) !important;
+}
+body .accordion-item:hover {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+}
+
+/* FOOTER */
+body footer {
+  background-color: #333 !important;
+  color: #ccc !important;
+}
+body footer h5,
+body footer h6 {
+  color: white !important;
+}
+body footer a {
+  color: var(--lila) !important;
+}
+body footer a:hover {
+  text-decoration: underline !important;
+}
+body footer .bi {
+  margin-right: 8px !important;
+  color: var(--lila) !important;
+}
+
+/* DARK MODE */
+.dark-mode {
+  background-color: #121212 !important;
+  color: var(--texto-claro) !important;
+}
+
+.dark-mode .navbar {
+  background-color: var(--dark-header-bg) !important;
+}
+
+.dark-mode .bg-light,
+.dark-mode section.bg-light,
+.dark-mode .accordion-button,
+.dark-mode section,
+.dark-mode .accordion-body,
+.dark-mode .accordion-item {
+  background-color: #2a2a2a !important;
+  color: var(--texto-claro) !important;
+  border-color: #444 !important;
+}
+
+.dark-mode .list-group-item {
+  background-color: #1a1a1a !important;
+  color: var(--texto-claro) !important;
+  border-color: #333 !important;
+}
+
+.dark-mode .blockquote {
+  color: var(--texto-claro) !important;
+  background-color: #1f1f1f !important;
+  border-left-color: var(--lila) !important;
+}
+
+.dark-mode footer {
+  background-color: #000 !important;
+  color: #ccc !important;
+}
+
+/* WHATSAPP FLOTANTE */
+body .whatsapp-float {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 999 !important;
+  transition: transform 0.3s ease !important;
+}
+body .whatsapp-float:hover {
+  transform: scale(1.1) !important;
+}
+
+/* === MODO OSCURO: VISIBILIDAD EN NAVBAR === */
+.dark-mode .navbar-light .nav-link {
+  color: var(--texto-claro) !important;
+}
+
+.dark-mode .navbar-light .nav-link:hover {
+  color: var(--lila-claro) !important;
+}
+
+.dark-mode .btn-outline-secondary {
+  background-color: #444 !important;
+  border-color: #666 !important;
+  box-shadow: none !important;
+}
+
+.dark-mode .btn-outline-secondary:hover {
+  background-color: #555 !important;
+  border-color: #888 !important;
+}
+
+.dark-mode .btn-outline-secondary img {
+  filter: brightness(0) invert(1); /* convierte el ícono oscuro a claro */
+}
+
+
